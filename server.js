@@ -9,11 +9,11 @@ function start(route, handle){
 
 		
 
-		response.writeHead(200, {"Content-Type": "text/plain"});
-		var content = route(pathname, handle);
-		response.write(content);
+//		response.writeHead(200, {"Content-Type": "text/plain"});
+		var content = route(pathname, handle, response);
+//		response.write(content);
 		//console.log(response);
-		response.end();
+//		response.end();
 	};
 
 	http.createServer(onRequest).listen(port);
