@@ -11,7 +11,7 @@ function start(response, postData) {
 				'charset=UTF-8" />'+
 				'</head>'+
 				'<body>'+
-				'<form action="/upload" method="post">'+
+				'<form action="/upload" enctype="multipart/form-data" method="post">'+
 				'<textarea name="text" rows="20" cols="60"></textarea>'+
 				'<input type="submit" value="Submit text" />'+
 				'</form>'+
@@ -44,13 +44,13 @@ function upload(response, postData) {
 	console.log("Request handler 'upload' was called.");
 
 	response.writeHead(200, {"Content-Type": "text/plain"});
-	response.write("You've sent : " + postData);
+	response.write("You've sent the text: " + postData + querystring.parse(postData).text);
 	response.end();
 }
 
 function show(response, postData){
 	console.log("Request Handeler 'Show was called.'");
-	fs.readFile("/temp/test.png", "binary", function(error, file){
+	fs.readFile("temp/test.png", "binary", function(error, file){
 		if(error){
 			response.writeHead(500, {"Content-Type": "text/plain"});
 			response.write(error + "\n");
