@@ -1,6 +1,7 @@
 //var exec = require("child_process").exec;
 var queryString = require("querystring"),
-fs = require("fs");
+	fs = require("fs"),
+	formidable = require("formidable");
 
 
 function start(response, postData) {
@@ -12,8 +13,8 @@ function start(response, postData) {
 				'</head>'+
 				'<body>'+
 				'<form action="/upload" enctype="multipart/form-data" method="post">'+
-				'<textarea name="text" rows="20" cols="60"></textarea>'+
-				'<input type="submit" value="Submit text" />'+
+				'<input type="file" name="upload">'+
+				'<input type="submit" value="Upload File" />'+
 				'</form>'+
 				'</body>'+
 				'</html>';
@@ -40,15 +41,33 @@ function start(response, postData) {
 	//return content;
 }
 
-function upload(response, postData) {
+function upload(response, request) {
 	console.log("Request handler 'upload' was called.");
 
-	response.writeHead(200, {"Content-Type": "text/plain"});
-	response.write("You've sent the text: " + postData + querystring.parse(postData).text);
-	response.end();
+	var form = new formidable.IncomingForm();
+	console.log("About to pars");
+
+	form.parse(request, function(error, fields, files){
+		console.log("Parsing done");
+
+		/* Possible error on Windows systems:
+		tried to rename to an already existing file */
+	
+		fs.rename(files.upload.path, "temp/test.png", function(error){
+			if(error){
+				fs.unlink("temp/test.png");
+				fs.rename(files.upload.path, "temp/test.png");
+			}
+		});
+
+		response.writeHead(200, {"Content-Type": "text/plain"});
+		response.write("Received Image : <br>");
+		response.write("<img src='/show' />");
+		response.end();
+	});
 }
 
-function show(response, postData){
+function show(response){
 	console.log("Request Handeler 'Show was called.'");
 	fs.readFile("temp/test.png", "binary", function(error, file){
 		if(error){
